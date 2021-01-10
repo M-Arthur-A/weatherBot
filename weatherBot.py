@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pyowm
 from pyowm.commons.enums import SubscriptionTypeEnum
 import telebot
@@ -21,7 +22,6 @@ with open('!ADDS/req') as f:
 owm = pyowm.OWM(f[0], config=config)
 bot = telebot.TeleBot(f[1])
 
-
 @bot.message_handler(content_types=['text'])
 def send_bot(message):
     mgr = owm.weather_manager()
@@ -32,16 +32,26 @@ def send_bot(message):
         return None
     w = observation.weather
     temp = w.temperature('celsius')["temp"]
-
+    temp = round(temp, 1)
     answer = "В городе " + message.text + " сейчас " + w.detailed_status + '.\n'
-    answer += "Температура сейчас: " + str(temp) + "\n\n"
+    answer += "Температура: " + str(temp) + "\n\n"
 
-    if temp < 10:
-        answer += "Сейчас холодно, одевайся максимально тепло!"
-    elif temp < 20:
-        answer += "Холодно, нужно одеться  теплее"
+    if temp > 30:
+        answer += "Жара! Не забывайте пить больше воды!"
+    elif temp <= 30 and temp > 20:
+        answer += "Погода что надо! Получайте удовольствие - надевайте плавки!"
+    elif temp <= 20 and temp > 10:
+        answer += "На улице свежо, не забудьте накинуть пальто!"
+    elif temp <= 10 and temp > 0:
+        answer += "Погода прохладная, не забудьте шапку!"
+    elif temp <= 0 and temp > -10:
+        answer += "Погода морозная. Даставайте штаны с начёсом!"
+    elif temp <= -10 and temp > -20:
+        answer += "На улице ппц холодрыга! Надевайте трусы с начосом!"
+    elif temp <= -20 and temp > -30:
+        answer += "Лютый мороз, надевайте всё, что есть!"
     else:
-        answer += "Температура как надо!"
+        answer += "Хозяин собаку на двор не выгонет, а вы куда собрались?"
 
     bot.send_message(message.chat.id, answer)
 
